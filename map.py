@@ -118,8 +118,9 @@ class BeatMap:
     self.notes = [Note(x) for x in data['colorNotes']]
     self.bombs = [Bomb(x) for x in data['bombNotes']]
     self.walls = [Wall(x) for x in data['obstacles']]
+    self.hjd = self.calc_hjd()
 
-  def get_hjd(self):
+  def calc_hjd(self):
     hj = 4
     n = 60/self.bpm
     while(self.njs*n*hj > 18): hj /= 2
@@ -129,8 +130,11 @@ class BeatMap:
   
     return hj
   
+  def get_hjd(self):
+    return self.hjd
+  
   def get_njd(self):
-    return self.njs * self.get_hjd()
+    return self.njs * self.get_hjd() * 60 / self.bpm
     
 
 """hjd calculation
@@ -204,3 +208,4 @@ class WholeMap:
   
   def beat_to_time(self, beat):
     return beat * 60 / self.bpm
+  
