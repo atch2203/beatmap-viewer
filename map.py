@@ -28,6 +28,7 @@ class Object:
   beat: float = 0.0
   x: int = 0 # horiz pos 0-3 left is 0
   y: int = 0 # vert pos 0-2 top is 2
+  duration: float = 0.0 #not technically in notes/bombs but helps for calculation
 
 @dataclass
 class Note(Object):
@@ -77,7 +78,6 @@ class Bomb(Object):
 @dataclass
 class Wall(Object): 
   objtype: Objtype = Objtype.WALL
-  duration: float = 0.0
   width: int = 0
   height: int = 0
 

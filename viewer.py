@@ -62,7 +62,6 @@ class Obj:
       if obj.objtype is Objtype.NOTE:
         asset.rotation_z = dir_to_angle[obj.dir]
       asset.position = (obj.x * xy_spacing, obj.y * xy_spacing, spawn_z + self.z_offset)
-      print(asset.origin)
     
     self.overall_z = spawn_z + self.z_offset
         
@@ -126,7 +125,10 @@ class Replay(Entity):
     while self.next_obj_spawn < len(self.beatmap.objects) and self.spawn_beat > self.beatmap.objects[self.next_obj_spawn].beat:
       spawn_z = self.map.beat_to_time(self.beatmap.objects[self.next_obj_spawn].beat - self.cur_beat)*(self.beatmap.njs)*z_speed
 
-      self.obj_entities.append(Obj(self.beatmap.objects[self.next_obj_spawn], spawn_z, self.beatmap.njs, self.map.beat_to_time))
+      insert_pos = len(self.obj_entities)
+      obj_insert = Obj(self.beatmap.objects[self.next_obj_spawn], spawn_z, self.beatmap.njs, self.map.beat_to_time)
+      while insert_pos > 0 and obj_insert.end < self.obj_entities[insert_pos-1].end: insert_pos -= 1
+      self.obj_entities.insert(insert_pos, obj_insert)
       self.next_obj_spawn += 1
 
   def go_to_beat(self, beat: float):
@@ -135,8 +137,8 @@ class Replay(Entity):
     self.cur_beat = beat
     self.spawn_beat = self.cur_beat + self.beatmap.get_hjd()
 
-    self.next_obj_despawn = 0 # TODO change to use end instead of beat
-    while self.next_obj_despawn < len(self.beatmap.objects) and self.cur_beat > self.beatmap.objects[self.next_obj_despawn].beat + self.despawn_offset:
+    self.next_obj_despawn = 0 
+    while self.next_obj_despawn < len(self.beatmap.objects) and self.cur_beat > self.beatmap.objects[self.next_obj_despawn].beat + self.beatmap.objects[self.next_obj_despawn].duration+ self.despawn_offset:
       self.next_obj_despawn += 1
 
     self.next_obj_spawn = self.next_obj_despawn
@@ -166,12 +168,12 @@ class Replay(Entity):
   def slider_seek(self):
     self.go_to_time(self.slider.value)
 
-  def next_5(self):
-    self.go_to_beat(min(self.cur_beat + self.map.time_to_beat(5), self.map.time_to_beat(self.audio.length)-0.01))
+  def next(self, sec):
+    self.go_to_beat(min(self.cur_beat + self.map.time_to_beat(sec), self.map.time_to_beat(self.audio.length)-0.01))
     self.update_slider()
   
-  def prev_5(self):
-    self.go_to_beat(max(self.cur_beat - self.map.time_to_beat(5), 0))
+  def prev(self, sec):
+    self.go_to_beat(max(self.cur_beat - self.map.time_to_beat(sec), 0))
     self.update_slider()
   
   def pauseplay(self):
@@ -199,12 +201,15 @@ class Replay(Entity):
 
 # replay = Replay("/home/alex/beatsaber/maps/3a7a2 (RATATA - Hener & Harper)", 2)
 # replay = Replay("/home/alex/beatsaber/maps/2b868 (mitsukiyo & Lee Jin-ah - Target For Love - staryouh)", 0)
-replay = Replay("/home/alex/beatsaber/maps/31d13 (Luminency - Fnyt)", 2)
+# replay = Replay("/home/alex/beatsaber/maps/31d13 (Luminency - Fnyt)", 2)
+replay = Replay("/home/alex/beatsaber/maps/298b5 (Last Wish - BSWC Team)", 4)
 
 def input(key):
   match(key): 
-    case 'right arrow': replay.next_5()
-    case 'left arrow': replay.prev_5()
+    case 'right arrow': replay.next(5)
+    case 'left arrow': replay.prev(5)
+    case '.': replay.next(0.1)
+    case ',': replay.prev(0.1)
     case 'space': replay.pauseplay()
   
 print(replay.map.beat_to_time(100))
