@@ -17,11 +17,21 @@ class Direction(Enum):
   DOWNRIGHT = 7
   ANY = 8
 
+class Objtype(Enum):
+  NOTE = 0
+  BOMB = 1
+  WALL = 2
+
 @dataclass
-class Note:
+class Object:
+  objtype: Objtype
   beat: float = 0.0
   x: int = 0 # horiz pos 0-3 left is 0
   y: int = 0 # vert pos 0-2 top is 2
+
+@dataclass
+class Note(Object):
+  objtype: Objtype = Objtype.NOTE
   color: Color = Color.LEFT
   dir: Direction = Direction.ANY
   angle_offset: float = 0.0
@@ -32,7 +42,12 @@ class Note:
     'y': 'y',
     'c': 'color',
     'd': 'dir',
-    'a': 'angle_offset'
+    'a': 'angle_offset',
+    '_time': 'beat',
+    '_lineIndex': 'x',
+    '_lineLayer': 'y',
+    '_type': 'color',
+    '_cutDirection': 'dir',
   }
   
   def __init__(self, json_obj):
@@ -42,15 +57,16 @@ class Note:
     
     
 @dataclass
-class Bomb:
-  beat: float = 0.0
-  x: int = 0 
-  y: int = 0 
+class Bomb(Object):
+  objtype: Objtype = Objtype.BOMB
 
   name_mappings = {
     'b': 'beat',
     'x': 'x',
     'y': 'y',
+    '_time': 'beat',
+    '_lineIndex': 'x',
+    '_lineLayer': 'y',
   }
   
   def __init__(self, json_obj):
@@ -59,11 +75,9 @@ class Bomb:
         setattr(self, self.name_mappings[j], type(getattr(self, self.name_mappings[j]))(json_obj[j]))
   
 @dataclass
-class Wall: # TODO add parsing for 2.6.0 walls
-  beat: float = 0.0
+class Wall(Object): 
+  objtype: Objtype = Objtype.WALL
   duration: float = 0.0
-  x: int = 0 
-  y: int = 0 
   width: int = 0
   height: int = 0
 
@@ -73,13 +87,24 @@ class Wall: # TODO add parsing for 2.6.0 walls
     'y': 'y',
     'd': 'duration',
     'w': 'width',
-    'h': 'height'
+    'h': 'height',
+    '_time': 'beat',
+    '_duration': 'duration',
+    '_lineIndex': 'x',
+    '_lineLayer': 'y',
+    '_width': 'width',
+    '_height': 'height'
   }
   
   def __init__(self, json_obj):
     for j in json_obj:
       if j in self.name_mappings:
         setattr(self, self.name_mappings[j], type(getattr(self, self.name_mappings[j]))(json_obj[j]))
+      if j == '_type':
+        match json_obj[j]:
+          case 0: self.y, self.height = 0, 5
+          case 1: self.y, self.height = 2, 3
+          case 2: pass
 
 class Difficulty(Enum):
   EASY = 1
@@ -106,7 +131,8 @@ class BeatMap:
     "_noteJumpStartBeatOffset": 'nj_offset',
   }
 
-  def __init__(self, folder, json_obj, bpm):
+  def __init__(self, version, folder, json_obj, bpm):
+    self.version = version
     self.folder = folder
     self.bpm = bpm
     for j in json_obj:
@@ -115,9 +141,17 @@ class BeatMap:
 
     with open(f'{folder}/{self.beatmap_file}', 'r') as f:
       data = json.loads(f.read())
-    self.notes = [Note(x) for x in data['colorNotes']]
-    self.bombs = [Bomb(x) for x in data['bombNotes']]
-    self.walls = [Wall(x) for x in data['obstacles']]
+    if self.version[0] == '3':
+      self.notes = [Note(x) for x in data['colorNotes']]
+      self.bombs = [Bomb(x) for x in data['bombNotes']]
+      self.walls = [Wall(x) for x in data['obstacles']]
+    else:
+      self.notes = [Note(x) for x in data['_notes'] if x['_type'] != 3]
+      self.bombs = [Bomb(x) for x in data['_notes'] if x['_type'] == 3]
+      self.walls = [Wall(x) for x in data['_obstacles']]
+    self.objects = self.notes + self.bombs + self.walls
+    self.objects.sort(key=lambda x: x.beat)
+      
     self.hjd = self.calc_hjd()
 
   def calc_hjd(self):
@@ -200,7 +234,7 @@ class WholeMap:
   
   def parse_beatmaps(self, beatmaps_obj):
     for a in [x["_difficultyBeatmaps"] for x in beatmaps_obj if x['_beatmapCharacteristicName'] == 'Standard'][0]:
-      self.beatmaps.append(BeatMap(self.folder, a, self.bpm))
+      self.beatmaps.append(BeatMap(self.version, self.folder, a, self.bpm))
     # for [map for characteristic in beatmaps_obj for map in characteristic["_difficultyBeatmaps"]]:
   
   def time_to_beat(self, time):
