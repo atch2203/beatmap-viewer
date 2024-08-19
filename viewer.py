@@ -2,7 +2,7 @@ from collections import deque
 from bsor.Bsor import make_bsor
 from bsor.Scoring import calc_stats
 
-from map import BeatMap, Direction, Note, Object, Objtype, WholeMap, Color as mapColor
+from map import BeatMap, Difficulty, Direction, Note, Object, Objtype, WholeMap, Color as mapColor
 import shutil
 
 
@@ -20,20 +20,23 @@ dir_to_angle = {
   Direction.ANY: 0,
 }
 
-xy_spacing = 0.5
+xy_spacing = 1
+scaling = 2*xy_spacing
 z_speed = 2
+bloq_offset = Vec3(-1.5, 0.5, 0)*xy_spacing
 
 
 class Obj:
   despawn_buffer: float = 0 # in beats
   assets: list[Entity]
   overall_z: float = 0
-  z_offset: float = 0
+  z_offset: float = 5*scaling
   end: float #point for despawning in beats
 
   def __init__(self, obj: Object, spawn_z: float, njs: float, btt):
     self.assets = list()
     self.obj = obj
+    offset = Vec3(0,0,0)
     application.asset_folder = Path(".")
     match obj.objtype:
       case Objtype.NOTE:
@@ -47,19 +50,22 @@ class Obj:
         self.assets.append(Entity(model='model/bomb.obj', color=rgb(0,0,0)))
         self.end = obj.beat
       case Objtype.WALL:
-        wall = Entity(model='cube', color=rgb(0,1,0), alpha=0.2, scale=xy_spacing)
+        wall = Entity(model='cube', color=rgb(0,1,0), alpha=0.2)
+        wall.scale *= 0.5
         wall.scale_x *= obj.width
         wall.scale_y *= obj.height
+        offset.y = obj.height/2 - xy_spacing
         z_thing = btt(obj.duration) * njs * z_speed / xy_spacing
         wall.scale_z *= z_thing
         self.end = obj.beat + obj.duration
-        self.z_offset = (z_thing) / 4
+        self.z_offset += (z_thing * xy_spacing) / (2)
         self.assets.append(wall)
     for asset in self.assets:
       asset.rotation_x = 180
+      asset.scale *= scaling
       if obj.objtype is Objtype.NOTE:
         asset.rotation_z = dir_to_angle[obj.dir]
-      asset.position = (obj.x * xy_spacing, obj.y * xy_spacing, spawn_z + self.z_offset)
+      asset.position = Vec3(obj.x * xy_spacing, obj.y * xy_spacing, spawn_z + self.z_offset) + bloq_offset + offset
     
     self.overall_z = spawn_z + self.z_offset
         
@@ -87,9 +93,9 @@ class Replay(Entity):
   despawn_offset = 0 #in beats, higher means bloq stays longer
   total_time = ''
 
-  def __init__(self, name, diffid):
+  def __init__(self, name: str, characteristic: str, diffid: Difficulty):
     self.map: WholeMap = WholeMap(name)
-    self.beatmap: BeatMap = self.map.beatmaps[diffid]
+    self.beatmap: BeatMap = self.map.beatmaps[characteristic][diffid]
     self.obj_entities: deque[Obj] = deque()
     self.init_audio()
     self.time_controller = Entity()
@@ -99,7 +105,7 @@ class Replay(Entity):
     self.slider.position = (-0.2, -0.45)
     self.slider.on_value_changed = self.slider_seek
     self.total_time = f'{int(self.audio.length//60)}:{int(self.audio.length%60):02d}'
-    self.despawn_offset = self.beatmap.hjd / 2
+    # self.despawn_offset = self.beatmap.hjd / 2
     self.update_slider()
     self.go_to_beat(0)
     
@@ -110,7 +116,7 @@ class Replay(Entity):
     self.cur_beat += self.map.time_to_beat(time.dt)
     self.spawn_beat = self.cur_beat + self.beatmap.get_hjd()
     for n in self.obj_entities:
-      n.set_z(self.map.beat_to_time(n.obj.beat - self.cur_beat)*(self.beatmap.njs)*z_speed)
+      n.set_z(self.map.beat_to_time(n.obj.beat - self.cur_beat)*(self.beatmap.njs)*z_speed*scaling)
     self.despawn_objects()
     self.spawn_objects()
     
@@ -122,7 +128,7 @@ class Replay(Entity):
   
   def spawn_objects(self):
     while self.next_obj_spawn < len(self.beatmap.objects) and self.spawn_beat > self.beatmap.objects[self.next_obj_spawn].beat:
-      spawn_z = self.map.beat_to_time(self.beatmap.objects[self.next_obj_spawn].beat - self.cur_beat)*(self.beatmap.njs)*z_speed
+      spawn_z = self.map.beat_to_time(self.beatmap.objects[self.next_obj_spawn].beat - self.cur_beat)*(self.beatmap.njs)*z_speed*scaling
 
       insert_pos = len(self.obj_entities)
       obj_insert = Obj(self.beatmap.objects[self.next_obj_spawn], spawn_z, self.beatmap.njs, self.map.beat_to_time)
@@ -198,11 +204,11 @@ class Replay(Entity):
 
 def input(key):
   match(key): 
-    case 'right arrow': replay.next(5)
-    case 'left arrow': replay.prev(5)
-    case '.': replay.next(0.1)
-    case ',': replay.prev(0.1)
-    case 'space': replay.pauseplay()
+    case 'right arrow': preview.next(5)
+    case 'left arrow': preview.prev(5)
+    case '.': preview.next(0.1)
+    case ',': preview.prev(0.1)
+    case 'space': preview.pauseplay()
   
 
 
@@ -211,10 +217,12 @@ if __name__ == "__main__":
   # replay = Replay("/home/alex/beatsaber/maps/3a7a2 (RATATA - Hener & Harper)", 2)
   # replay = Replay("/home/alex/beatsaber/maps/2b868 (mitsukiyo & Lee Jin-ah - Target For Love - staryouh)", 0)
   # replay = Replay("/home/alex/beatsaber/maps/31d13 (Luminency - Fnyt)", 2)
-  replay = Replay("/home/alex/beatsaber/beatmap-viewer/maps/298b5 (Last Wish - BSWC Team)", 3)
+  preview = Replay("/home/alex/beatsaber/beatmap-viewer/maps/298b5 (Last Wish - BSWC Team)", "Standard", Difficulty.Expert)
 
   # print(replay.map.beat_to_time(100))
     
-  camera.position = Vec3(0.75, 0.7, -6)
+  camera.position = Vec3(0, 1.7, 0)
+
+  EditorCamera()
 
   app.run()

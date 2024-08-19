@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 import json
 
+from pyparsing import Char
+
 class Color(Enum):
   LEFT = 0
   RIGHT = 1
@@ -36,6 +38,7 @@ class Note(Object):
   color: Color = Color.LEFT
   dir: Direction = Direction.ANY
   angle_offset: float = 0.0
+  scoring_type = None
 
   name_mappings = {
     'b': 'beat',
@@ -169,6 +172,13 @@ class BeatMap:
   
   def get_njd(self):
     return self.njs * self.get_hjd() * 60 / self.bpm
+
+class Difficulty(Enum):
+  Easy="Easy"
+  Normal="Normal"
+  Hard="Hard"
+  Expert="Expert"
+  ExpertPlus="ExpertPlus"
     
 
 """hjd calculation
@@ -190,6 +200,7 @@ class BeatMap:
 
 @dataclass
 class WholeMap:
+  beatmaps: dict[str, dict[Difficulty, BeatMap]] #TODO add support for noodlemap????
   folder: str = ""
   version: str = "no version"
   song_name: str = "no song"
@@ -204,7 +215,6 @@ class WholeMap:
   swing_shuffle_period: float = 0.0
   preview_start_time: float = 0.0
   preview_duration: float = 0.0
-  beatmaps: list[BeatMap] = field(default_factory=list) #TODO add support for noodlemap????
   # environment not necessary
 
   name_mappings = {
@@ -231,10 +241,27 @@ class WholeMap:
         setattr(self, self.name_mappings[j], json_obj[j])
     self.beatmaps = list()
     self.parse_beatmaps(json_obj['_difficultyBeatmapSets'])
+    self.song_length = self.get_song_length()
+  
+  def get_song_length(self):
+    import ffmpeg
+    file_path = f'{self.folder}/{self.song_file}'
+    probe = ffmpeg.probe(file_path)
+    stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'audio'), None)
+    duration = float(stream['duration'])
+    return duration
+  
   
   def parse_beatmaps(self, beatmaps_obj):
-    for a in [x["_difficultyBeatmaps"] for x in beatmaps_obj if x['_beatmapCharacteristicName'] == 'Standard'][0]:
-      self.beatmaps.append(BeatMap(self.version, self.folder, a, self.bpm))
+    self.beatmaps = dict()
+    for a in beatmaps_obj:
+      c = dict()
+      for map in a["_difficultyBeatmaps"]:
+        c[Difficulty[map['_difficulty']]] = BeatMap(self.version, self.folder, map, self.bpm)
+      self.beatmaps[a["_beatmapCharacteristicName"]] = c
+      
+    # for a in [x["_difficultyBeatmaps"] for x in beatmaps_obj if x['_beatmapCharacteristicName'] == 'Standard'][0]:
+      # self.beatmaps.append(BeatMap(self.version, self.folder, a, self.bpm))
     # for [map for characteristic in beatmaps_obj for map in characteristic["_difficultyBeatmaps"]]:
   
   def time_to_beat(self, time):
