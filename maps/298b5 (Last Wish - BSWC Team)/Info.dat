@@ -1,0 +1,132 @@
+{
+  "_version": "2.0.0",
+  "_songName": "Last Wish",
+  "_songSubName": "feat. Ice",
+  "_songAuthorName": "Kry.exe",
+  "_levelAuthorName": "BSWC Team",
+  "_beatsPerMinute": 210,
+  "_shuffle": 0,
+  "_shufflePeriod": 0.5,
+  "_previewStartTime": 42.5,
+  "_previewDuration": 15,
+  "_songFilename": "song.egg",
+  "_coverImageFilename": "cover.png",
+  "_environmentName": "TimbalandEnvironment",
+  "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+  "_songTimeOffset": 0,
+  "_customData": {
+    "_contributors": [
+      {
+        "_role": "Mapper",
+        "_name": "fraies",
+        "_iconPath": "fraies.png"
+      },
+      {
+        "_role": "Mapper / Downmapper",
+        "_name": "Thyspoon",
+        "_iconPath": "thyspoon.png"
+      },
+      {
+        "_role": "Mapper",
+        "_name": "abcbadq",
+        "_iconPath": "abc.png"
+      },
+      {
+        "_role": "Lighter",
+        "_name": "Alice",
+        "_iconPath": "alice.png"
+      }
+    ],
+    "_editors": {
+      "_lastEditedBy": "ChroMapper",
+      "MMA2": {
+        "version": "4.5.0"
+      },
+      "ChroMapper": {
+        "version": "0.8.523"
+      }
+    }
+  },
+  "_difficultyBeatmapSets": [
+    {
+      "_beatmapCharacteristicName": "Standard",
+      "_difficultyBeatmaps": [
+        {
+          "_difficulty": "Easy",
+          "_difficultyRank": 1,
+          "_beatmapFilename": "EasyStandard.dat",
+          "_noteJumpMovementSpeed": 12,
+          "_noteJumpStartBeatOffset": -0.49,
+          "_customData": {
+            "_difficultyLabel": "Journey",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_suggestions": [
+              "Chroma"
+            ]
+          }
+        },
+        {
+          "_difficulty": "Normal",
+          "_difficultyRank": 3,
+          "_beatmapFilename": "NormalStandard.dat",
+          "_noteJumpMovementSpeed": 14,
+          "_noteJumpStartBeatOffset": -1.2,
+          "_customData": {
+            "_difficultyLabel": "Discovery",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_suggestions": [
+              "Chroma"
+            ]
+          }
+        },
+        {
+          "_difficulty": "Hard",
+          "_difficultyRank": 5,
+          "_beatmapFilename": "HardStandard.dat",
+          "_noteJumpMovementSpeed": 16,
+          "_noteJumpStartBeatOffset": 0.2,
+          "_customData": {
+            "_difficultyLabel": "Power",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_suggestions": [
+              "Chroma"
+            ]
+          }
+        },
+        {
+          "_difficulty": "Expert",
+          "_difficultyRank": 7,
+          "_beatmapFilename": "ExpertStandard.dat",
+          "_noteJumpMovementSpeed": 18,
+          "_noteJumpStartBeatOffset": -0.1,
+          "_customData": {
+            "_difficultyLabel": "Realization",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_suggestions": [
+              "Chroma"
+            ]
+          }
+        },
+        {
+          "_difficulty": "ExpertPlus",
+          "_difficultyRank": 9,
+          "_beatmapFilename": "ExpertPlusStandard.dat",
+          "_noteJumpMovementSpeed": 20,
+          "_noteJumpStartBeatOffset": -0.33,
+          "_customData": {
+            "_difficultyLabel": "Wondrous Fantasy",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_suggestions": [
+              "Chroma"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "_version": "2.0.0",
+  "_songName": "mitsukiyo & Lee Jin-ah - Target For Love ",
+  "_songSubName": "(Ludicin's Hardcore Bootleg)",
+  "_songAuthorName": "Ludicin",
+  "_levelAuthorName": "staryouh",
+  "_beatsPerMinute": 170,
+  "_shuffle": 0,
+  "_shufflePeriod": 0.5,
+  "_previewStartTime": 12,
+  "_previewDuration": 10,
+  "_songFilename": "song.egg",
+  "_coverImageFilename": "cover.png",
+  "_environmentName": "DefaultEnvironment",
+  "_songTimeOffset": 0,
+  "_customData": {
+    "_contributors": []
+  },
+  "_difficultyBeatmapSets": [
+    {
+      "_beatmapCharacteristicName": "Standard",
+      "_difficultyBeatmaps": [
+        {
+          "_difficulty": "ExpertPlus",
+          "_difficultyRank": 9,
+          "_beatmapFilename": "ExpertPlusStandard.dat",
+          "_noteJumpMovementSpeed": 18.5,
+          "_noteJumpStartBeatOffset": -0.4,
+          "_customData": {
+            "_difficultyLabel": "Always with me , yes you are",
+            "_editorOffset": 0,
+            "_editorOldOffset": 0,
+            "_warnings": [],
+            "_information": [],
+            "_suggestions": [],
+            "_requirements": []
+          }
+        }
+      ]
+    }
+  ]
+}

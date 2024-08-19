@@ -8,8 +8,6 @@ import shutil
 
 from ursina import *
 
-app = Ursina()
-
 dir_to_angle = {
   Direction.UP: 0,
   Direction.DOWN: 180,
@@ -101,6 +99,7 @@ class Replay(Entity):
     self.slider.position = (-0.2, -0.45)
     self.slider.on_value_changed = self.slider_seek
     self.total_time = f'{int(self.audio.length//60)}:{int(self.audio.length%60):02d}'
+    self.despawn_offset = self.beatmap.hjd / 2
     self.update_slider()
     self.go_to_beat(0)
     
@@ -197,13 +196,6 @@ class Replay(Entity):
   #endregion
       
 
-
-
-# replay = Replay("/home/alex/beatsaber/maps/3a7a2 (RATATA - Hener & Harper)", 2)
-# replay = Replay("/home/alex/beatsaber/maps/2b868 (mitsukiyo & Lee Jin-ah - Target For Love - staryouh)", 0)
-# replay = Replay("/home/alex/beatsaber/maps/31d13 (Luminency - Fnyt)", 2)
-replay = Replay("/home/alex/beatsaber/maps/298b5 (Last Wish - BSWC Team)", 4)
-
 def input(key):
   match(key): 
     case 'right arrow': replay.next(5)
@@ -212,22 +204,17 @@ def input(key):
     case ',': replay.prev(0.1)
     case 'space': replay.pauseplay()
   
-print(replay.map.beat_to_time(100))
-  
-camera.position = Vec3(0.75, 0.7, -7)
-
-EditorCamera()
-
-app.run()
 
 
+if __name__ == "__main__":
+  app = Ursina(vsync=False)
+  # replay = Replay("/home/alex/beatsaber/maps/3a7a2 (RATATA - Hener & Harper)", 2)
+  # replay = Replay("/home/alex/beatsaber/maps/2b868 (mitsukiyo & Lee Jin-ah - Target For Love - staryouh)", 0)
+  # replay = Replay("/home/alex/beatsaber/maps/31d13 (Luminency - Fnyt)", 2)
+  replay = Replay("/home/alex/beatsaber/beatmap-viewer/maps/298b5 (Last Wish - BSWC Team)", 3)
 
-# replay_filename = "/home/alex/beatsaber/maps/76561198246352688-Last Wish-Expert-Standard-C86336B3CA84CD03BC3995FADFD7CFDDE2FD00C0-1723756781.bsor"
-# other_replay_filename = "/home/alex/beatsaber/maps/76561198246352688-Last Wish-Hard-Standard-C86336B3CA84CD03BC3995FADFD7CFDDE2FD00C0-1723756425.bsor"
-# ratata = "/home/alex/beatsaber/maps/76561198246352688-RATATA-ExpertPlus-Standard-8E4B7917C01E5987A5B3FF13FAA3CA8F27D21D34-1722472664.bsor"
-# map_filename= "/home/alex/beatsaber/maps/3a7a2 (RATATA - Hener & Harper)/ExpertPlusStandard.dat"
+  # print(replay.map.beat_to_time(100))
+    
+  camera.position = Vec3(0.75, 0.7, -6)
 
-# with open(ratata, 'rb') as f:
-#     m = make_bsor(f)
-#     stats=calc_stats(m)
-#     print(stats)
+  app.run()

@@ -1,0 +1,70 @@
+{
+  "_version": "2.1.0",
+  "_songName": "RATATA",
+  "_songSubName": "(Crankdat Remix)",
+  "_songAuthorName": "Skrillex, Missy Elliot & Mr. Oizo",
+  "_levelAuthorName": "Hener & Harper",
+  "_beatsPerMinute": 124.0,
+  "_songTimeOffset": 0.0,
+  "_shuffle": 0.0,
+  "_shufflePeriod": 0.5,
+  "_previewStartTime": 48.8,
+  "_previewDuration": 60.0,
+  "_songFilename": "ratata.egg",
+  "_coverImageFilename": "ratatacoverrrr.jpg",
+  "_environmentName": "DefaultEnvironment",
+  "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+  "_environmentNames": [],
+  "_colorSchemes": [],
+  "_customData": {
+    "_editors": {
+      "_lastEditedBy": "ChroMapper",
+      "ChroMapper": {
+        "version": "0.9.690"
+      }
+    }
+  },
+  "_difficultyBeatmapSets": [
+    {
+      "_beatmapCharacteristicName": "Standard",
+      "_difficultyBeatmaps": [
+        {
+          "_difficulty": "Hard",
+          "_difficultyRank": 5,
+          "_beatmapFilename": "HardStandard.dat",
+          "_noteJumpMovementSpeed": 15.0,
+          "_noteJumpStartBeatOffset": -0.5,
+          "_beatmapColorSchemeIdx": 0,
+          "_environmentNameIdx": 0,
+          "_customData": {
+            "_difficultyLabel": "r.,/"
+          }
+        },
+        {
+          "_difficulty": "Expert",
+          "_difficultyRank": 7,
+          "_beatmapFilename": "ExpertStandard.dat",
+          "_noteJumpMovementSpeed": 17.0,
+          "_noteJumpStartBeatOffset": -0.75,
+          "_beatmapColorSchemeIdx": 0,
+          "_environmentNameIdx": 0,
+          "_customData": {
+            "_difficultyLabel": "rata"
+          }
+        },
+        {
+          "_difficulty": "ExpertPlus",
+          "_difficultyRank": 9,
+          "_beatmapFilename": "ExpertPlusStandard.dat",
+          "_noteJumpMovementSpeed": 19.0,
+          "_noteJumpStartBeatOffset": 0.0,
+          "_beatmapColorSchemeIdx": 0,
+          "_environmentNameIdx": 0,
+          "_customData": {
+            "_difficultyLabel": "RATATA"
+          }
+        }
+      ]
+    }
+  ]
+}
